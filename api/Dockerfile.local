@@ -1,0 +1,20 @@
+# FROM node:12.22.12
+FROM node:16.15.1 
+
+RUN apt-get update \
+    && apt-get install -y \
+        nmap \
+        vim \
+        tree
+
+COPY package.json ./
+COPY yarn.lock ./
+
+RUN yarn install
+
+COPY . /backend/api
+WORKDIR /backend/api
+
+EXPOSE 5000
+
+CMD ["yarn", "start"]

@@ -1,0 +1,46 @@
+version: "3.5"
+services:
+  # #####################################################################################################
+  # build api container
+  api:
+    container_name: ${API_CONTAINER_NAME}
+    build:
+      context: ./api
+      dockerfile: Dockerfile.local
+    restart: always
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    environment:
+      PORT: ${SERVER_PORT}
+    depends_on:
+      - mongo
+    networks:
+      - local-network
+
+  # #####################################################################################################
+  # mongo container
+  mongo:
+    container_name: ${MONGODB_CONTAINER_NAME}
+    image: mongo:latest
+    restart: always
+    volumes:
+      - ${MONGO_DATA}:/data/db
+      - ${MONGO_DUMP}:/dump
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - 27017:27017
+    networks:
+      - local-network
+
+# #####################################################################################################
+volumes:
+  data:
+    driver: local
+
+networks:
+  local-network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+# #####################################################################################################
